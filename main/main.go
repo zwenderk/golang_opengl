@@ -9,20 +9,10 @@ import (
 )
 
 const (
-    tituloVentana = "02_Golang, un cuadrilátero"
+    tituloVentana = "03_Golang, usando entradas"
     anchoVentana = 640
     altoVentana = 480
 )
-
-//*********************************************************************************************************
-// Función que se llama después de haber evaluado todas las declaraciones de variables del paquete y antes que main
-
-//func init() {
-// manejo de eventos GLFW se debe ejecutar en el hilo principal
-//    runtime.LockOSThread()
-//}
-
-//*********************************************************************************************************
 
 func main() {
 
@@ -50,6 +40,10 @@ func main() {
     if err != nil {
         panic(err)
     }
+
+    window.SetKeyCallback(onTecla)
+    window.SetMouseButtonCallback(onRaton)
+
     window.MakeContextCurrent()
 
     // Inicializar Glow
@@ -91,4 +85,44 @@ func dibuja() {
     gl.Vertex2f(-0.5, -0.5)
 
     gl.End()
+}
+
+// **************** TECLADO *****************************
+func onTecla(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+
+    fmt.Print("------------->onTecla01\n")
+
+    if key == glfw.KeyA && action == glfw.Press {
+        //w.SetShouldClose(true)
+        fmt.Print("aaaaaaaaaa\n")
+    }
+
+    if key == glfw.KeyY && action == glfw.Press {
+        //w.SetShouldClose(true)
+        fmt.Print("yyyyyyyyy\n")
+    }
+}
+
+// ***************** RATON *******************************
+func onRaton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod glfw.ModifierKey) {
+    fmt.Print("------------->onRaton01\n")
+    if button == glfw.MouseButtonLeft {
+        fmt.Print("glfw.BUTTON_LEFT\n")
+    }
+
+    if button == glfw.MouseButtonRight {
+        fmt.Print("glfw.BUTTON_RIGHT\n")
+    }
+
+    if button == glfw.MouseButtonMiddle {
+        fmt.Print("glfw.BUTTON_MIDDL\n")
+    }
+
+    if action == glfw.Press {
+        fmt.Print("glfw.MOUSEBUTTONDOWN\n")
+    }
+
+    if action == glfw.Release {
+        fmt.Print("glfw.MOUSEBUTTONUP\n")
+    }
 }
