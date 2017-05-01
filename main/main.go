@@ -1,5 +1,12 @@
 package main
 
+/*
+Creamos fichero Vertex Shader llamado shader.vs.glsl
+Creamos fichero Fragment Shader llamado shader.fs.glsl
+Creamos fichero Shader.go para el manejo de los shaders
+Provisionalmente quitamos el manejo de texturas en main
+ */
+
 import (
     "fmt"
     "log"
@@ -28,7 +35,7 @@ var indices = []int32{
 }
 
 const (
-    tituloVentana = "06_Golang, usando índices"
+    tituloVentana = "07_Golang, usando shaders"
     anchoVentana = 640
     altoVentana = 480
 )
@@ -81,8 +88,11 @@ func main() {
     modelo := &Modelo{}
     modelo.Inicializar(vertices, texturaCoords)
 
-    textura := &Textura{}                 // Creamos objeto Texture
-    textura.nuevaTextura("Barcelona.png") // Carga textura
+    shader := &Shader{} // Creamos objeto Shader
+    shader.Inicializar("shader")
+
+    //textura := &Textura{}                 // Creamos objeto Texture
+    //textura.nuevaTextura("Barcelona.png") // Carga textura
 
     if err != nil {
         fmt.Print("Error con textura\n")
@@ -90,7 +100,10 @@ func main() {
 
     // -------------> BUCLE PRINCIPAL
     for !window.ShouldClose() {
-        enlazarTextura(textura.getIdTextura())
+        //enlazarTextura(textura.getIdTextura())
+
+        shader.enlazar()
+
         modelo.dibujar(vertices)
 
         // Mantenimiento
