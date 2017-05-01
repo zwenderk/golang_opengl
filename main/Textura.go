@@ -5,7 +5,9 @@ import (
     "image"
     "image/draw"
     _ "image/png"
+
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
+
     "os"
 )
 

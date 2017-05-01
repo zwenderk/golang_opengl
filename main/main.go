@@ -7,10 +7,16 @@ para el uso de variables uniform en los shaders
 
 import (
     "fmt"
+
     "log"
+
     "runtime"
+
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
     "github.com/go-gl/glfw/v3.2/glfw"
+    "github.com/go-gl/mathgl/mgl32"
+
+    //"os"
 )
 
 var vertices = []float32  {
@@ -33,7 +39,7 @@ var indices = []int32{
 }
 
 const (
-    tituloVentana = "08_Golang, usando variables uniform"
+    tituloVentana = "09_Golang, usando matrices"
     anchoVentana = 640
     altoVentana = 480
 )
@@ -98,6 +104,13 @@ func main() {
         fmt.Print("Error con textura\n")
     }
 
+    // Matrices **********************************************************************************
+
+    projection := mgl32.Ortho2D(-640 / 2, 640 / 2, -480 / 2, 480 / 2) // Crea matriz de proyección
+    scale := mgl32.Scale3D(256,256,1) // Crea matriz de escala
+    target := mgl32.Ident4()
+    target = projection.Mul4(scale) // Multiplicar matrices projection por scale y guardar resultado en target
+
     // -------------> BUCLE PRINCIPAL
     for !window.ShouldClose() {
         textura.enlazaTextura()
@@ -105,6 +118,8 @@ func main() {
         shader.enlazar()
 
         shader.setUniform("sampler", 0); // Pone valor 0 a la variable uniform "sampler"
+
+        shader.setUniformMatrix("projection", &target)
 
         modelo.dibujar(vertices)
 
@@ -155,6 +170,3 @@ func onRaton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod gl
     }
 }
 
-func enlazarTextura(idTextura uint32 ) {
-    gl.BindTexture(gl.TEXTURE_2D, idTextura)
-}

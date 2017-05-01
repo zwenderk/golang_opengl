@@ -2,7 +2,11 @@ package main
 
 import (
     "fmt"
+
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
+
+    "github.com/go-gl/mathgl/mgl32"
+
     "io/ioutil"
 )
 
@@ -45,7 +49,7 @@ func (s *Shader) Inicializar(filename string) {
     if err != nil {
         fmt.Printf("Error leyendo Fragment Shader ----->\n")
     }
-    //fsources := string(fraTxt) + "\x00" // fraTxt es tipo byte
+
     fsources, free := gl.Strs(string(fraTxt)+ "\x00") // fraTxt es tipo byte
 
     gl.ShaderSource(s.idFS, 1, fsources, nil)
@@ -64,6 +68,7 @@ func (s *Shader) Inicializar(filename string) {
     gl.AttachShader(s.idPrograma, s.idFS) // Enlaza FS
 
     gl.BindAttribLocation(s.idPrograma, 0, gl.Str("vertices\x00")) // Localización 0 a "vertices" en programa shader
+    gl.BindAttribLocation(s.idPrograma, 1, gl.Str("textures\x00")) // Localización 1 a "textures" en programa shader
 
     gl.LinkProgram(s.idPrograma) // "linka" el programa
     // Prueba errores de "linkado"
@@ -84,6 +89,21 @@ func (s *Shader) setUniform(name string, value int32) {
     location:=gl.GetUniformLocation(s.idPrograma, gl.Str(name + "\x00"))
     if location != -1 { // Si existe ese nombre de variable
         gl.Uniform1i(location, value)
+    }
+}
+
+// Dar valor a una variable uniform del programa shader
+func (s *Shader) setUniformMatrix(name string, value *mgl32.Mat4) {
+    location:=gl.GetUniformLocation(s.idPrograma, gl.Str(name + "\x00"))
+    if location != -1 { // Si existe ese nombre de variable
+
+        bb := new([16]float32) // Creamos un buffer de floats
+        for i:=0; i<4; i++{
+            for j:=0; j<4; j++ {
+                bb[j+i*4] = float32(value.At(i,j))
+            }
+        }
+        gl.UniformMatrix4fv(location, 1, false, &bb[0]) // Enviar a shader matriz PROJECTION * SCALE
     }
 }
 
