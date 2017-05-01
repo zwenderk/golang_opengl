@@ -12,8 +12,28 @@ import (
     "os"
 )
 
+var vertices = []float32  {
+    -0.5,  0.5, 0.0, // ARRIBA IZQUIERDA
+    0.5,  0.5, 0.0, // ARRIBA A LA DERECHA
+    0.5, -0.5, 0.0, // ABAJO A LA DERECHA
+
+    0.5, -0.5, 0.0, // ABAJO A LA DERECHA
+    -0.5, -0.5, 0.0, // ABAJO A LA IZQUIERDA
+    -0.5,  0.5, 0.0, // ARRIBA A LA IZQUIERDA
+}
+
+var texturaCoords = []float32 {
+    0,0,
+    1,0,
+    1,1,
+
+    1,1,
+    0,1,
+    0,0,
+}
+
 const (
-    tituloVentana = "04_Golang, usando texturas"
+    tituloVentana = "05_Golang, usando VBO"
     anchoVentana = 640
     altoVentana = 480
 )
@@ -63,6 +83,9 @@ func main() {
     gl.Enable(gl.TEXTURE_2D) // Habilitamos el uso de texturas
     textura, err := nuevaTextura("Barcelona.png") // Carga textura
 
+    modelo := &Modelo{}
+    modelo.Inicializar(vertices, texturaCoords)
+
     if err != nil {
         fmt.Print("Error con textura\n")
     }
@@ -70,32 +93,12 @@ func main() {
     // -------------> BUCLE PRINCIPAL
     for !window.ShouldClose() {
         enlazarTextura(textura)
-        dibuja()
+        modelo.dibujar(vertices)
 
         // Mantenimiento
         window.SwapBuffers() // Intercambia buffers para presenter en pantalla
         glfw.PollEvents()
     } // -----------> FIN DE BUCLE PRINCIPAL
-}
-
-func dibuja() {
-    gl.Clear(gl.COLOR_BUFFER_BIT)
-
-    gl.Begin(gl.QUADS) // Cada coordenada con su color
-
-    gl.TexCoord2f(0, 0)
-    gl.Vertex2f(-0.5, 0.5)
-
-    gl.TexCoord2f(1, 0)
-    gl.Vertex2f(0.5, 0.5)
-
-    gl.TexCoord2f(1, 1)
-    gl.Vertex2f(0.5, -0.5)
-
-    gl.TexCoord2f(0, 1)
-    gl.Vertex2f(-0.5, -0.5)
-
-    gl.End()
 }
 
 // **************** TECLADO *****************************
