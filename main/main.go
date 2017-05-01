@@ -2,38 +2,33 @@ package main
 
 import (
     "fmt"
-    "image"
-    "image/draw"
-    _ "image/png"
     "log"
     "runtime"
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
     "github.com/go-gl/glfw/v3.2/glfw"
-    "os"
 )
 
 var vertices = []float32  {
-    -0.5,  0.5, 0.0, // ARRIBA IZQUIERDA
-    0.5,  0.5, 0.0, // ARRIBA A LA DERECHA
-    0.5, -0.5, 0.0, // ABAJO A LA DERECHA
-
-    0.5, -0.5, 0.0, // ABAJO A LA DERECHA
-    -0.5, -0.5, 0.0, // ABAJO A LA IZQUIERDA
-    -0.5,  0.5, 0.0, // ARRIBA A LA IZQUIERDA
+    -0.5,  0.5, 0, // ARRIBA IZQUIERDA     0
+    0.5,  0.5, 0, // ARRIBA A LA DERECHA  1
+    0.5, -0.5, 0, // ABAJO A LA DERECHA   2
+    -0.5, -0.5, 0, // ABAJO A LA IZQUIERDA 3
 }
 
 var texturaCoords = []float32 {
-    0,0,
-    1,0,
-    1,1,
+    0, 0,
+    1, 0,
+    1, 1,
+    0, 1,
+}
 
-    1,1,
-    0,1,
-    0,0,
+var indices = []int32{
+    0, 1, 2, // Primer triángulo
+    2, 3, 0, // Segundo triángulo
 }
 
 const (
-    tituloVentana = "05_Golang, usando VBO"
+    tituloVentana = "06_Golang, usando índices"
     anchoVentana = 640
     altoVentana = 480
 )
@@ -81,10 +76,13 @@ func main() {
     gl.ClearColor(.5, 1, 0, 0.0) // Especifica valores de color de limpieza
 
     gl.Enable(gl.TEXTURE_2D) // Habilitamos el uso de texturas
-    textura, err := nuevaTextura("Barcelona.png") // Carga textura
+    //textura, err := nuevaTextura("Barcelona.png") // Carga textura
 
     modelo := &Modelo{}
     modelo.Inicializar(vertices, texturaCoords)
+
+    textura := &Textura{}                 // Creamos objeto Texture
+    textura.nuevaTextura("Barcelona.png") // Carga textura
 
     if err != nil {
         fmt.Print("Error con textura\n")
@@ -92,7 +90,7 @@ func main() {
 
     // -------------> BUCLE PRINCIPAL
     for !window.ShouldClose() {
-        enlazarTextura(textura)
+        enlazarTextura(textura.getIdTextura())
         modelo.dibujar(vertices)
 
         // Mantenimiento
@@ -143,47 +141,4 @@ func onRaton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod gl
 
 func enlazarTextura(idTextura uint32 ) {
     gl.BindTexture(gl.TEXTURE_2D, idTextura)
-}
-
-// Recibe un string con el nombre del fichero gráfico para usarlo como textura devuelve ID de textura
-func nuevaTextura(file string) (uint32, error) {
-    ficheroImagen, err := os.Open(file) // Abre fichero
-    if err != nil {               // Si hay fallo devolver 0 e información
-        return 0, fmt.Errorf("textura %q no encontrada en disco: %v", file, err)
-    }
-    img, _, err := image.Decode(ficheroImagen) // Decodifica imagen png y devuelve una interface rectángulo img
-    if err != nil {                      // Devolver 0 y error si falla
-        return 0, err
-    }
-
-    // El método Bounds() es de la interface img que devuelve el tipo Rectangle,
-    // NewRGBA devuelve un tipo RGBA de imagen
-    rgba := image.NewRGBA(img.Bounds())
-    if rgba.Stride != rgba.Rect.Size().X*4 { // Si no coincide stride devolver 0 e información
-        fmt.Errorf("stride no soportado")
-    }
-    // (imagen destino, rectángulo, imágen fuente, coordenada inicial, operación)
-    draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
-
-    var texturaID uint32
-    gl.GenTextures(1, &texturaID)            // Crea una textura vacía llamada texturaID
-    gl.ActiveTexture(gl.TEXTURE0)          // Que será la textura 0
-    gl.BindTexture(gl.TEXTURE_2D, texturaID) // Enlazar texturaID al punto TEXTURE_2D de OpenGL
-    // Parámetros del tipo de textura
-    gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-    gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-    gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-    gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-    gl.TexImage2D( // Especifica una textura de imagen 2D
-        gl.TEXTURE_2D,             // Tipo
-        0,                         // Nivel de mipmap
-        gl.RGBA,                   // Formato RGBA
-        int32(rgba.Rect.Size().X), // Ancho
-        int32(rgba.Rect.Size().Y), // Alto
-        0,                // Borde
-        gl.RGBA,          // Formato
-        gl.UNSIGNED_BYTE, // Tipo de los datos
-        gl.Ptr(rgba.Pix)) // Puntero a los datos de imagen en memoria
-
-    return texturaID,	nil
 }
