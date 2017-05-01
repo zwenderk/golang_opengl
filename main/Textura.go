@@ -2,19 +2,10 @@ package main
 
 import (
     "fmt"
-    //"go/build"
     "image"
     "image/draw"
     _ "image/png"
-    //"log"
-    //"os"
-    //"runtime"
-    //"strings"
-
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
-    //"github.com/go-gl/glfw/v3.2/glfw"
-    //"github.com/go-gl/mathgl/mgl32"
-
     "os"
 )
 
@@ -75,4 +66,8 @@ func (t *Textura) nuevaTextura(file string)  {
         gl.Ptr(rgba.Pix)) // Puntero a los datos de imagen en memoria
 
 
+}
+
+func (t *Textura) enlazaTextura() {
+    gl.BindTexture(gl.TEXTURE_2D, t.texturaID)
 }

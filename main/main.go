@@ -1,11 +1,9 @@
 package main
 
 /*
-Creamos fichero Vertex Shader llamado shader.vs.glsl
-Creamos fichero Fragment Shader llamado shader.fs.glsl
-Creamos fichero Shader.go para el manejo de los shaders
-Provisionalmente quitamos el manejo de texturas en main
- */
+Modificamos ficheros Shader.go, shader.vs.glsl y shader.fs.glsl ,Textura.go y Model.go
+para el uso de variables uniform en los shaders
+*/
 
 import (
     "fmt"
@@ -35,7 +33,7 @@ var indices = []int32{
 }
 
 const (
-    tituloVentana = "07_Golang, usando shaders"
+    tituloVentana = "08_Golang, usando variables uniform"
     anchoVentana = 640
     altoVentana = 480
 )
@@ -83,7 +81,9 @@ func main() {
     gl.ClearColor(.5, 1, 0, 0.0) // Especifica valores de color de limpieza
 
     gl.Enable(gl.TEXTURE_2D) // Habilitamos el uso de texturas
-    //textura, err := nuevaTextura("Barcelona.png") // Carga textura
+    // enable alpha support (prueba)
+    gl.Enable(gl.BLEND )
+    gl.BlendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA )
 
     modelo := &Modelo{}
     modelo.Inicializar(vertices, texturaCoords)
@@ -91,8 +91,8 @@ func main() {
     shader := &Shader{} // Creamos objeto Shader
     shader.Inicializar("shader")
 
-    //textura := &Textura{}                 // Creamos objeto Texture
-    //textura.nuevaTextura("Barcelona.png") // Carga textura
+    textura := &Textura{}                 // Creamos objeto Texture
+    textura.nuevaTextura("Barcelona.png") // Carga textura
 
     if err != nil {
         fmt.Print("Error con textura\n")
@@ -100,14 +100,17 @@ func main() {
 
     // -------------> BUCLE PRINCIPAL
     for !window.ShouldClose() {
-        //enlazarTextura(textura.getIdTextura())
+        textura.enlazaTextura()
 
         shader.enlazar()
+
+        shader.setUniform("sampler", 0); // Pone valor 0 a la variable uniform "sampler"
 
         modelo.dibujar(vertices)
 
         // Mantenimiento
         window.SwapBuffers() // Intercambia buffers para presenter en pantalla
+
         glfw.PollEvents()
     } // -----------> FIN DE BUCLE PRINCIPAL
 }

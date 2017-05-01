@@ -79,7 +79,14 @@ func (s *Shader) Inicializar(filename string) {
     gl.DeleteShader(s.idFS)
 }
 
+// Dar valor a una variable uniform del programa shader
+func (s *Shader) setUniform(name string, value int32) {
+    location:=gl.GetUniformLocation(s.idPrograma, gl.Str(name + "\x00"))
+    if location != -1 { // Si existe ese nombre de variable
+        gl.Uniform1i(location, value)
+    }
+}
+
 func (s *Shader) enlazar() {
     gl.UseProgram(s.idPrograma)
 }
-

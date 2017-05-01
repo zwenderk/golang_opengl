@@ -33,17 +33,19 @@ func (m *Modelo) Inicializar(vertices []float32, tex_coords []float32) {
 
 func (m *Modelo) dibujar(vertices []float32) {
 
-    gl.ClearColor(.5, 1, 0, 0.0) // Especifica valores de color de limpieza
+    gl.ClearColor(.2, .3, 0.3, 1.0) // Especifica valores de color de limpieza
     gl.Clear(gl.COLOR_BUFFER_BIT)
 
-    gl.EnableClientState(gl.VERTEX_ARRAY); // Activa VERTEX_ARRAY
-    gl.EnableClientState(gl.TEXTURE_COORD_ARRAY); // Activa TEXTURE_COORD_ARRAY
+    gl.EnableVertexAttribArray(0) // Activamos localización 0 en VAA en program shader ("vertices")
+    gl.EnableVertexAttribArray(1) // Activamos localización 1 en VAA en program shader textura
 
     gl.BindBuffer(gl.ARRAY_BUFFER, m.v_id); // Conecta VBO de posición
-    gl.VertexPointer(3, gl.FLOAT, 0, nil); // 3 = x,y,z
+
+    gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil) // Ahora como tenemos programa shader
 
     gl.BindBuffer(gl.ARRAY_BUFFER, m.t_id); // Conecta VBO de textura
-    gl.TexCoordPointer(2, gl.FLOAT, 0, nil); // 2 = u,v
+
+    gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 0, nil) // Ahora como tenemos programa shader
 
     gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, m.i_id); // Conecta VBO de índices
 
@@ -51,7 +53,4 @@ func (m *Modelo) dibujar(vertices []float32) {
 
     gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0) // Desconecta
     gl.BindBuffer(gl.ARRAY_BUFFER, 0); // Desconecta
-
-    gl.DisableClientState(gl.VERTEX_ARRAY); // Desactiva VERTEX_ARRAY
-    gl.DisableClientState(gl.TEXTURE_COORD_ARRAY); // Desactiva TEXTURE_COORD_ARRAY
 }
