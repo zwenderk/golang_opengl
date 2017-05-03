@@ -1,22 +1,16 @@
 package main
 
 /*
-Modificamos ficheros Shader.go, shader.vs.glsl y shader.fs.glsl ,Textura.go y Model.go
-para el uso de variables uniform en los shaders
+Creamos fichero Camara.go y en main posicionamos la cámara para una visión lateral
 */
 
 import (
     "fmt"
-
     "log"
-
     "runtime"
-
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
     "github.com/go-gl/glfw/v3.2/glfw"
     "github.com/go-gl/mathgl/mgl32"
-
-    //"os"
 )
 
 var vertices = []float32  {
@@ -39,7 +33,7 @@ var indices = []int32{
 }
 
 const (
-    tituloVentana = "09_Golang, usando matrices"
+    tituloVentana = "10_Control con camara"
     anchoVentana = 640
     altoVentana = 480
 )
@@ -87,7 +81,7 @@ func main() {
     gl.ClearColor(.5, 1, 0, 0.0) // Especifica valores de color de limpieza
 
     gl.Enable(gl.TEXTURE_2D) // Habilitamos el uso de texturas
-    // enable alpha support (prueba)
+
     gl.Enable(gl.BLEND )
     gl.BlendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA )
 
@@ -111,13 +105,26 @@ func main() {
     target := mgl32.Ident4()
     target = projection.Mul4(scale) // Multiplicar matrices projection por scale y guardar resultado en target
 
+    // Cámara ************************************************************************************
+    camara := &Camara{} // Creamos objeto cámara
+    camara.Inicializar(640, 400)
+
+    camara.setPosition(mgl32.Vec3{-300, 0, 0}) // Posicionamos la cámara
+
+
+
     // -------------> BUCLE PRINCIPAL
     for !window.ShouldClose() {
+
+        target = scale // ojo cambio de matrices
+
         textura.enlazaTextura()
 
         shader.enlazar()
 
         shader.setUniform("sampler", 0); // Pone valor 0 a la variable uniform "sampler"
+
+        target = camara.getProjection().Mul4(target) // target = projection * scale * traslate
 
         shader.setUniformMatrix("projection", &target)
 
@@ -136,12 +143,12 @@ func onTecla(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mod
     fmt.Print("------------->onTecla01\n")
 
     if key == glfw.KeyA && action == glfw.Press {
-        //w.SetShouldClose(true)
+
         fmt.Print("aaaaaaaaaa\n")
     }
 
     if key == glfw.KeyY && action == glfw.Press {
-        //w.SetShouldClose(true)
+
         fmt.Print("yyyyyyyyy\n")
     }
 }
@@ -169,4 +176,3 @@ func onRaton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod gl
         fmt.Print("glfw.MOUSEBUTTONUP\n")
     }
 }
-

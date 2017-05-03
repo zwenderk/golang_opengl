@@ -2,11 +2,14 @@ package main
 
 import (
     "fmt"
+
     "image"
     "image/draw"
     _ "image/png"
 
+
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
+
 
     "os"
 )
@@ -25,12 +28,12 @@ func (t *Textura) getIdTextura() uint32 {
 func (t *Textura) nuevaTextura(file string)  {
     ficheroImagen, err := os.Open(file) // Abre fichero
     if err != nil {               // Si hay fallo devolver 0 e información
-        //return 0, fmt.Errorf("textura %q no encontrada en disco: %v", file, err)
+
         fmt.Errorf("textura %q no encontrada en disco: %v", file, err)
     }
     img, _, err := image.Decode(ficheroImagen) // Decodifica imagen png y devuelve una interface rectángulo img
     if err != nil {                      // Devolver 0 y error si falla
-        //return 0, err
+
         fmt.Errorf("Fallo en Decode", file, err)
     }
 

@@ -3,9 +3,11 @@ package main
 import (
     "fmt"
 
+
     "github.com/go-gl/gl/v2.1/gl" // OpenGL antiguo
 
     "github.com/go-gl/mathgl/mgl32"
+
 
     "io/ioutil"
 )
